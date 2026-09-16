@@ -190,7 +190,7 @@
         <p>This profile contains explicit 18+ content.<br>Please verify your age to enter.</p>
         
         <div class="btn-container">
-            <!-- КНОПКА С АВТОМАТИЧЕСКИМ ВЫЗОВОМ СИСТЕМНОГО ОКНА iOS/Android -->
+            <!-- КНОПКА С ВЫЗОВОМ СИСТЕМНОГО ОКНА OPEN / CANCEL -->
             <button onclick="openExternalBrowser()" class="btn btn-primary">YES, I AM 18+ 💦</button>
             
             <a href="https://google.com" class="btn btn-secondary">No, I'm under 18</a>
@@ -222,15 +222,22 @@
 
             if (isInAppBrowser()) {
                 if (isIOS) {
-                    // Магия для iOS: принудительно вызываем системное окно "Open app outside of Instagram"
+                    // Надежный вызов системного попапа Open/Cancel через схему safari-links
                     const cleanUrl = offerUrl.replace(/^https?:\/\//, '');
-                    window.location.href = "safari-https://" + cleanUrl;
                     
-                    // Запасной вариант, если схема safari- не сработала
+                    // Создаем скрытый iframe для триггера системного диалога iOS
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = "safari-https://" + cleanUrl;
+                    document.body.appendChild(iframe);
+
                     setTimeout(function() {
-                        window.location.href = "x-safari-https://" + cleanUrl;
-                    }, 500);
+                        document.body.removeChild(iframe);
+                        // Запасной прямой редирект, если пользователь нажмет Open
+                        window.location.href = offerUrl;
+                    }, 400);
                     return;
+
                 } else if (isAndroid) {
                     // Интент для Android Chrome
                     window.location.href = "intent://" + offerUrl.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end;";
