@@ -27,7 +27,7 @@
             padding: 20px;
         }
 
-        /* Инструкция для инста-браузера сверху */
+        /* Инструкция сверху для наглядности */
         .browser-alert {
             position: fixed;
             top: 10px;
@@ -175,7 +175,7 @@
 </head>
 <body>
 
-    <!-- Подсказка для пользователя, если он открыл сайт внутри Instagram -->
+    <!-- Подсказка для пользователя в инста-браузере -->
     <div id="browserAlert" class="browser-alert">
         ⚠️ <b>Open in Browser:</b> Tap <b>⋯</b> in the top right and select <b>"Open in external browser"</b> for full access!
     </div>
@@ -190,8 +190,8 @@
         <p>This profile contains explicit 18+ content.<br>Please verify your age to enter.</p>
         
         <div class="btn-container">
-            <!-- ПАРТНЕРСКАЯ ССЫЛКА НА ОФФЕР -->
-            <button onclick="redirectToOffer()" class="btn btn-primary">Yes, I am 18+ 💦</button>
+            <!-- КНОПКА С АВТОМАТИЧЕСКИМ ВЫЗОВОМ СИСТЕМНОГО ОКНА iOS/Android -->
+            <button onclick="openExternalBrowser()" class="btn btn-primary">YES, I AM 18+ 💦</button>
             
             <a href="https://google.com" class="btn btn-secondary">No, I'm under 18</a>
         </div>
@@ -202,10 +202,9 @@
     </div>
 
     <script>
-        // Твоя партнерская ссылка (сюда полетят конверсии)
+        // Твоя партнерская ссылка на оффер
         const offerUrl = "https://nord.affpmelody.com/Xyjn8l";
 
-        // Функция проверки: открыто ли внутри инстаграма / фейсбука / соцсетей
         function isInAppBrowser() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             return (ua.indexOf('Instagram') > -1 || ua.indexOf('FBAN') > -1 || ua.indexOf('FBAV') > -1 || ua.indexOf('Twitter') > -1);
@@ -213,18 +212,26 @@
 
         window.onload = function() {
             if (isInAppBrowser()) {
-                // Показываем подсказку со скриншота про три точки
                 document.getElementById('browserAlert').style.display = 'block';
             }
         };
 
-        function redirectToOffer() {
-            if (isInAppBrowser()) {
-                // Попытка принудительно выкинуть пользователя в системный браузер (Android / iOS intent)
-                const isAndroid = /android/i.test(navigator.userAgent);
-                const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        function openExternalBrowser() {
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            const isAndroid = /android/i.test(navigator.userAgent);
 
-                if (isAndroid) {
+            if (isInAppBrowser()) {
+                if (isIOS) {
+                    // Магия для iOS: принудительно вызываем системное окно "Open app outside of Instagram"
+                    const cleanUrl = offerUrl.replace(/^https?:\/\//, '');
+                    window.location.href = "safari-https://" + cleanUrl;
+                    
+                    // Запасной вариант, если схема safari- не сработала
+                    setTimeout(function() {
+                        window.location.href = "x-safari-https://" + cleanUrl;
+                    }, 500);
+                    return;
+                } else if (isAndroid) {
                     // Интент для Android Chrome
                     window.location.href = "intent://" + offerUrl.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end;";
                     setTimeout(function() {
@@ -233,7 +240,8 @@
                     return;
                 }
             }
-            // Обычный переход для ПК или полноценных браузеров
+            
+            // Если открыто в обычном браузере — просто переходим по ссылке
             window.location.href = offerUrl;
         }
     </script>
