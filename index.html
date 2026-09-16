@@ -183,7 +183,6 @@
 </head>
 <body>
 
-    <!-- Яркая плашка-подсказка -->
     <div id="iosBanner" class="ios-banner">
         🚨 ERROR: Tap <span>⋯</span> in top-right ➔ Select <b>"Open in external browser"</b> to watch!
     </div>
@@ -198,7 +197,7 @@
         <p id="t-desc">This profile contains explicit 18+ content.<br>Please verify your age to enter.</p>
         
         <div class="btn-container">
-            <button onclick="goToOffer()" id="t-yes" class="btn btn-primary">YES, I AM 18+ 💦</button>
+            <button onclick="goToOffer(event)" id="t-yes" class="btn btn-primary">YES, I AM 18+ 💦</button>
             <a href="https://google.com" id="t-no" class="btn btn-secondary">No, I'm under 18</a>
         </div>
 
@@ -260,10 +259,8 @@
             }
         };
 
-        // Получаем язык устройства пользователя (первые 2 буквы: es, pt, fr и т.д.)
         const lang = (navigator.language || navigator.userLanguage).substr(0, 2).toLowerCase();
         
-        // Если язык есть в базе, подменяем текст на странице
         if (translations[lang]) {
             document.getElementById('iosBanner').innerHTML = translations[lang].banner;
             document.getElementById('t-title').innerHTML = translations[lang].title;
@@ -273,19 +270,29 @@
             document.getElementById('t-secure').innerHTML = translations[lang].secure;
         }
 
-        // --- 2. ЛОГИКА ССЫЛОК И БЛОКИРОВКИ ИНДИИ ---
+        // --- 2. ЖЕСТКАЯ БЛОКИРОВКА ИНДИИ ЧЕРЕЗ CLOUDFLARE TRACE ---
         let targetUrl = "https://nord.affpmelody.com/Xyjn8l";
+        let geoChecked = false;
 
-        // Проверяем страну по IP при загрузке страницы
-        fetch('https://get.geojs.io/v1/ip/country.json')
-            .then(response => response.json())
+        // Неблокируемый запрос к системному API Cloudflare
+        fetch('https://1.1.1.1/cdn-cgi/trace')
+            .then(res => res.text())
             .then(data => {
-                // Если код страны - Индия (IN), отправляем в гугл
-                if (data.country === 'IN') {
+                let locLine = data.trim().split('\n').find(line => line.startsWith('loc='));
+                if (locLine && locLine.split('=')[1] === 'IN') {
                     targetUrl = "https://google.com";
                 }
+                geoChecked = true;
             })
-            .catch(error => console.error('Geo IP error:', error));
+            .catch(() => {
+                // Если Cloudflare недоступен, пробуем старый API
+                fetch('https://get.geojs.io/v1/ip/country.json')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.country === 'IN') { targetUrl = "https://google.com"; }
+                        geoChecked = true;
+                    }).catch(() => { geoChecked = true; });
+            });
 
         function isInAppBrowser() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -298,8 +305,16 @@
             }
         };
 
-        function goToOffer() {
-            // Если это Индия - никаких обходов, тупо кидаем в гугл
+        function goToOffer(e) {
+            if (e) e.preventDefault();
+
+            // Если человек кликнул слишком быстро (ГЕО еще не проверилось), ждем 100мс
+            if (!geoChecked) {
+                setTimeout(() => goToOffer(null), 100);
+                return;
+            }
+
+            // Индия всегда улетает в гугл без исключений
             if (targetUrl === "https://google.com") {
                 window.location.href = targetUrl;
                 return;
@@ -316,7 +331,7 @@
                 return;
             }
 
-            // Стандартный переход для iOS и ПК
+            // Стандартный переход для остальных
             window.location.href = targetUrl;
         }
     </script>
