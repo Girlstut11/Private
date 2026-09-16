@@ -14,7 +14,6 @@
         }
 
         body {
-            /* Создаем имитацию размытого интимного фото на фоне */
             background: radial-gradient(circle at center, #3a1c24 0%, #0a0a0a 100%);
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -25,9 +24,25 @@
             min-height: 100vh;
             text-align: center;
             overflow: hidden;
+            padding: 20px;
         }
 
-        /* Эффект матового стекла для карточки */
+        /* Инструкция для инста-браузера сверху */
+        .browser-alert {
+            position: fixed;
+            top: 10px;
+            background: rgba(255, 42, 95, 0.2);
+            border: 1px solid rgba(255, 42, 95, 0.4);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #ffadb9;
+            display: none;
+            max-width: 360px;
+            animation: fadeIn 0.5s ease;
+            z-index: 100;
+        }
+
         .modal {
             background: rgba(30, 30, 30, 0.6);
             backdrop-filter: blur(15px);
@@ -41,7 +56,6 @@
             position: relative;
         }
 
-        /* Блок с фейковой аватаркой и уведомлением */
         .avatar-container {
             position: relative;
             width: 90px;
@@ -110,6 +124,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: transform 0.1s, filter 0.2s;
+            cursor: pointer;
         }
 
         .btn-primary {
@@ -117,6 +132,7 @@
             color: white;
             box-shadow: 0 8px 20px rgba(255, 42, 95, 0.4);
             animation: pulse-btn 2.5s infinite;
+            border: none;
         }
 
         .btn-primary:active {
@@ -129,10 +145,6 @@
             border: 1px solid #444;
         }
 
-        .btn-secondary:active {
-            background: rgba(255,255,255,0.05);
-        }
-
         .secure-note {
             margin-top: 25px;
             font-size: 12px;
@@ -143,7 +155,6 @@
             gap: 5px;
         }
 
-        /* Анимации */
         @keyframes pulse-btn {
             0% { box-shadow: 0 0 0 0 rgba(255, 42, 95, 0.7); }
             70% { box-shadow: 0 0 0 15px rgba(255, 42, 95, 0); }
@@ -155,9 +166,19 @@
             50% { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Подсказка для пользователя, если он открыл сайт внутри Instagram -->
+    <div id="browserAlert" class="browser-alert">
+        ⚠️ <b>Open in Browser:</b> Tap <b>⋯</b> in the top right and select <b>"Open in external browser"</b> for full access!
+    </div>
 
     <div class="modal">
         <div class="avatar-container">
@@ -169,8 +190,8 @@
         <p>This profile contains explicit 18+ content.<br>Please verify your age to enter.</p>
         
         <div class="btn-container">
-            <!-- ТВОЯ ССЫЛКА ЗДЕСЬ -->
-            <a href="https://nord.affpmelody.com/Xyjn8l" class="btn btn-primary">Yes, I am 18+ 💦</a>
+            <!-- ПАРТНЕРСКАЯ ССЫЛКА НА ОФФЕР -->
+            <button onclick="redirectToOffer()" class="btn btn-primary">Yes, I am 18+ 💦</button>
             
             <a href="https://google.com" class="btn btn-secondary">No, I'm under 18</a>
         </div>
@@ -180,5 +201,41 @@
         </div>
     </div>
 
+    <script>
+        // Твоя партнерская ссылка (сюда полетят конверсии)
+        const offerUrl = "https://nord.affpmelody.com/Xyjn8l";
+
+        // Функция проверки: открыто ли внутри инстаграма / фейсбука / соцсетей
+        function isInAppBrowser() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            return (ua.indexOf('Instagram') > -1 || ua.indexOf('FBAN') > -1 || ua.indexOf('FBAV') > -1 || ua.indexOf('Twitter') > -1);
+        }
+
+        window.onload = function() {
+            if (isInAppBrowser()) {
+                // Показываем подсказку со скриншота про три точки
+                document.getElementById('browserAlert').style.display = 'block';
+            }
+        };
+
+        function redirectToOffer() {
+            if (isInAppBrowser()) {
+                // Попытка принудительно выкинуть пользователя в системный браузер (Android / iOS intent)
+                const isAndroid = /android/i.test(navigator.userAgent);
+                const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+                if (isAndroid) {
+                    // Интент для Android Chrome
+                    window.location.href = "intent://" + offerUrl.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end;";
+                    setTimeout(function() {
+                        window.location.href = offerUrl;
+                    }, 1000);
+                    return;
+                }
+            }
+            // Обычный переход для ПК или полноценных браузеров
+            window.location.href = offerUrl;
+        }
+    </script>
 </body>
 </html>
