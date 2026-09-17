@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
-    <title>Private Profile</title>
+    <title>Private Profile Verification</title>
     <style>
+        /* ==========================================
+           ПРЕМИУМ ДИЗАЙН (GLASSMORPHISM + GLOW)
+           ========================================== */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background: radial-gradient(circle at center, #3a1c24 0%, #0a0a0a 100%);
+            /* Глубокий темный фон с красно-розовым свечением */
+            background: radial-gradient(circle at 50% 30%, #3a0d1c 0%, #050505 80%);
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
@@ -27,91 +29,60 @@
             padding: 20px;
         }
 
-        .ios-banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(90deg, #ff2a5f, #ff7e67);
-            color: white;
-            padding: 12px 15px;
-            font-size: 13px;
-            font-weight: 700;
-            text-align: center;
-            display: none;
-            z-index: 999;
-            box-shadow: 0 4px 15px rgba(255, 42, 95, 0.5);
-            animation: pulse-banner 2s infinite;
-        }
-
-        .ios-banner span {
-            text-decoration: underline;
-            font-size: 15px;
-        }
-
-        .modal {
-            background: rgba(30, 30, 30, 0.7);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+        /* Эффект матового стекла (Apple Style) */
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
             padding: 40px 25px;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 380px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-            position: relative;
-            margin-top: 40px;
-        }
-
-        .avatar-container {
-            position: relative;
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 20px auto;
-        }
-
-        .avatar {
             width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #ff2a5f, #ff7e67);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            box-shadow: 0 0 20px rgba(255, 42, 95, 0.4);
+            max-width: 380px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            transform: translateY(20px);
+            animation: float-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
         }
 
-        .badge {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background-color: #ff2a5f;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid #222;
-            animation: pulse-badge 2s infinite;
+        .icon-warning {
+            font-size: 50px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px rgba(255, 42, 95, 0.6));
+            animation: pulse-icon 2s infinite;
         }
 
         h1 {
             font-size: 26px;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             letter-spacing: 0.5px;
+            background: linear-gradient(90deg, #ffffff, #ffb3c6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         p {
             font-size: 15px;
-            color: #cccccc;
+            color: #b3b3b3;
             margin-bottom: 30px;
-            line-height: 1.6;
+            line-height: 1.5;
+        }
+
+        /* Анимированная подсказка для iOS */
+        .ios-hint {
+            display: none;
+            background: rgba(255, 42, 95, 0.15);
+            border: 1px solid rgba(255, 42, 95, 0.4);
+            color: #ffdae0;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            animation: pulse-border 2s infinite;
+            transition: all 0.3s ease;
         }
 
         .btn-container {
@@ -124,216 +95,261 @@
             display: block;
             width: 100%;
             padding: 18px;
-            border-radius: 12px;
+            border-radius: 16px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             text-decoration: none;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: transform 0.1s, filter 0.2s;
+            transition: all 0.2s;
+            /* ВАЖНО: Разрешаем вызов нативного меню iOS при долгом нажатии */
+            -webkit-touch-callout: default !important; 
             cursor: pointer;
         }
 
-        .btn-primary {
-            background: linear-gradient(90deg, #ff2a5f, #ff4b72);
+        .btn-glow {
+            background: linear-gradient(135deg, #ff2a5f, #ff6b3d);
             color: white;
-            box-shadow: 0 8px 20px rgba(255, 42, 95, 0.4);
-            animation: pulse-btn 2.5s infinite;
             border: none;
+            box-shadow: 0 10px 25px rgba(255, 42, 95, 0.4);
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-primary:active {
-            transform: scale(0.96);
+        .btn-glow::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 3s infinite;
         }
 
-        .btn-secondary {
+        .btn-glow:active { transform: scale(0.96); box-shadow: 0 5px 15px rgba(255, 42, 95, 0.4); }
+
+        .btn-ghost {
             background: transparent;
-            color: #888888;
-            border: 1px solid #444;
+            color: #777;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .secure-note {
+        .secure-badge {
             margin-top: 25px;
             font-size: 12px;
-            color: #777;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
+            color: #666;
+            font-weight: 500;
         }
 
-        @keyframes pulse-btn {
-            0% { box-shadow: 0 0 0 0 rgba(255, 42, 95, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 42, 95, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 42, 95, 0); }
+        /* Анимации */
+        @keyframes float-up { to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-icon { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes pulse-border { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,42,95,0.4); } 50% { box-shadow: 0 0 0 8px rgba(255,42,95,0); } }
+        @keyframes shine { 100% { left: 200%; } }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
         }
-
-        @keyframes pulse-badge {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes pulse-banner {
-            0% { opacity: 0.9; }
-            50% { opacity: 1; filter: brightness(1.2); }
-            100% { opacity: 0.9; }
-        }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
     </style>
 </head>
 <body>
 
-    <div id="iosBanner" class="ios-banner">
-        🚨 ERROR: Tap <span>⋯</span> in top-right ➔ Select <b>"Open in external browser"</b> to watch!
-    </div>
+    <div class="glass-panel">
+        <div class="icon-warning">🤫</div>
+        <h1 id="txt-title">Age Verification</h1>
+        <p id="txt-desc">This profile contains explicit 18+ content.<br>Please verify your age to enter.</p>
 
-    <div class="modal">
-        <div class="avatar-container">
-            <div class="avatar">🤫</div>
-            <div class="badge">1</div>
+        <!-- Подсказка для iOS -->
+        <div id="ios-hint" class="ios-hint">
+            👇 HOLD button for 2 seconds & select 'Open Link'
         </div>
-        
-        <h1 id="t-title">Private Content</h1>
-        <p id="t-desc">This profile contains explicit 18+ content.<br>Please verify your age to enter.</p>
-        
+
         <div class="btn-container">
-            <button onclick="goToOffer(event)" id="t-yes" class="btn btn-primary">YES, I AM 18+ 💦</button>
-            <a href="https://google.com" id="t-no" class="btn btn-secondary">No, I'm under 18</a>
+            <a href="#" id="btn-yes" class="btn btn-glow">YES, I AM 18+ 💦</a>
+            <a href="https://google.com" id="btn-no" class="btn btn-ghost">No, I'm under 18</a>
         </div>
 
-        <div id="t-secure" class="secure-note">
-            🔒 100% Secure & Free Registration
-        </div>
+        <div id="txt-secure" class="secure-badge">🔒 100% Secure & Free Registration</div>
     </div>
 
     <script>
-        // --- 1. СИСТЕМА ЛОКАЛИЗАЦИИ (АВТО-ПЕРЕВОД) ---
-        const translations = {
+        // ==========================================
+        // 1. НАСТРОЙКИ ССЫЛОК И ГЕО-БЛОКИРОВКИ
+        // ==========================================
+        let targetUrl = "https://nord.affpmelody.com/Xyjn8l"; 
+        const fallbackUrl = "https://google.com";
+        
+        // РАСШИРЕННЫЙ BLACKLIST: Индия, Филиппины, Таиланд, Турция, Сирия, Ирак, Индонезия
+        const blockedGeos = ['IN', 'PH', 'TH', 'TR', 'SY', 'IQ', 'ID'];
+        
+        let isBadGeo = false;
+        let geoChecked = false;
+
+        // ==========================================
+        // 2. СМАРТ-ЛОКАЛИЗАЦИЯ (АВТО-ПЕРЕВОД)
+        // ==========================================
+        const i18n = {
+            "en": {
+                title: "Age Verification",
+                desc: "This profile contains explicit 18+ content.<br>Please verify your age to enter.",
+                hint: "👇 HOLD button for 2 seconds & select 'Open Link'",
+                hintError: "⚠️ Please HOLD the button, do not just tap!",
+                yes: "YES, I AM 18+ 💦",
+                no: "No, I'm under 18",
+                secure: "🔒 100% Secure & Free Registration"
+            },
             "es": {
-                banner: "🚨 ERROR: Toca <span>⋯</span> arriba a la derecha ➔ Selecciona <b>'Abrir en el navegador'</b> para ver.",
-                title: "Contenido Privado",
-                desc: "Este perfil contiene contenido explícito +18.<br>Por favor, verifica tu edad para entrar.",
-                btnYes: "SÍ, SOY +18 💦",
-                btnNo: "No, soy menor de 18",
+                title: "Verificación de Edad",
+                desc: "Este perfil contiene contenido explícito +18.<br>Por favor verifica tu edad.",
+                hint: "👇 MANTÉN presionado el botón 2 seg. y elige 'Abrir enlace'",
+                hintError: "⚠️ ¡MANTÉN presionado el botón, no solo lo toques!",
+                yes: "SÍ, TENGO +18 💦",
+                no: "No, soy menor de 18",
                 secure: "🔒 Registro 100% Seguro y Gratuito"
             },
             "pt": {
-                banner: "🚨 ERRO: Toque em <span>⋯</span> no canto superior direito ➔ Selecione <b>'Abrir no navegador'</b>!",
-                title: "Conteúdo Privado",
-                desc: "Este perfil contém conteúdo explícito +18.<br>Por favor, verifique sua idade para entrar.",
-                btnYes: "SIM, TENHO +18 💦",
-                btnNo: "Não, sou menor de 18",
+                title: "Verificação de Idade",
+                desc: "Este perfil contém conteúdo explícito +18.<br>Por favor, verifique sua idade.",
+                hint: "👇 SEGURE o botão por 2 seg. e escolha 'Abrir link'",
+                hintError: "⚠️ Por favor, SEGURE o botão, não apenas toque!",
+                yes: "SIM, TENHO +18 💦",
+                no: "Não, sou menor de 18",
                 secure: "🔒 Registro 100% Seguro e Gratuito"
             },
             "fr": {
-                banner: "🚨 ERREUR : Appuyez sur <span>⋯</span> en haut à droite ➔ Sélectionnez <b>'Ouvrir dans le navigateur'</b> !",
-                title: "Contenu Privé",
-                desc: "Ce profil contient du contenu explicite +18.<br>Veuillez vérifier votre âge pour entrer.",
-                btnYes: "OUI, J'AI +18 ANS 💦",
-                btnNo: "Non, j'ai moins de 18 ans",
+                title: "Vérification d'âge",
+                desc: "Ce profil contient du contenu explicite +18.<br>Veuillez vérifier votre âge.",
+                hint: "👇 MAINTENEZ le bouton 2 sec et choisissez 'Ouvrir le lien'",
+                hintError: "⚠️ Veuillez MAINTENIR le bouton appuyé !",
+                yes: "OUI, J'AI +18 ANS 💦",
+                no: "Non, j'ai moins de 18 ans",
                 secure: "🔒 Inscription 100% Sécurisée et Gratuite"
             },
             "de": {
-                banner: "🚨 FEHLER: Tippe auf <span>⋯</span> oben rechts ➔ Wähle <b>'Im Browser öffnen'</b> um das Video zu sehen!",
-                title: "Privater Inhalt",
-                desc: "Dieses Profil enthält explizite 18+ Inhalte.<br>Bitte bestätige dein Alter, um fortzufahren.",
-                btnYes: "JA, ICH BIN 18+ 💦",
-                btnNo: "Nein, ich bin unter 18",
+                title: "Altersprüfung",
+                desc: "Dieses Profil enthält explizite 18+ Inhalte.<br>Bitte bestätige dein Alter.",
+                hint: "👇 HALTE den Button 2 Sek. und wähle 'Link öffnen'",
+                hintError: "⚠️ Bitte HALTE den Button gedrückt!",
+                yes: "JA, ICH BIN 18+ 💦",
+                no: "Nein, ich bin unter 18",
                 secure: "🔒 100% Sichere & Kostenlose Registrierung"
             },
             "it": {
-                banner: "🚨 ERRORE: Tocca <span>⋯</span> in alto a destra ➔ Seleziona <b>'Apri nel browser'</b> per guardare!",
-                title: "Contenuto Privato",
-                desc: "Questo profilo contiene contenuti espliciti V.M. 18 anni.<br>Verifica la tua età per entrare.",
-                btnYes: "SÌ, HO 18+ ANNI 💦",
-                btnNo: "No, ho meno di 18 anni",
+                title: "Verifica dell'età",
+                desc: "Questo profilo contiene contenuti espliciti V.M. 18 anni.<br>Verifica la tua età.",
+                hint: "👇 TIENI PREMUTO per 2 sec. e scegli 'Apri link'",
+                hintError: "⚠️ TIENI PREMUTO il pulsante, non toccarlo e basta!",
+                yes: "SÌ, HO 18+ ANNI 💦",
+                no: "No, ho meno di 18 anni",
                 secure: "🔒 Registrazione 100% Sicura e Gratuita"
             },
             "ru": {
-                banner: "🚨 ОШИБКА: Нажмите <span>⋯</span> в правом верхнем углу ➔ Выберите <b>'Открыть в браузере'</b> для просмотра!",
-                title: "Приватный контент",
-                desc: "В этом профиле содержатся откровенные материалы 18+.<br>Пожалуйста, подтвердите свой возраст.",
-                btnYes: "ДА, МНЕ ЕСТЬ 18 💦",
-                btnNo: "Нет, мне меньше 18",
+                title: "Подтверждение возраста",
+                desc: "В этом профиле содержатся откровенные материалы 18+.<br>Подтвердите свой возраст.",
+                hint: "👇 УДЕРЖИВАЙТЕ кнопку 2 секунды и выберите 'Открыть ссылку'",
+                hintError: "⚠️ ЖМИТЕ И УДЕРЖИВАЙТЕ кнопку, а не просто кликайте!",
+                yes: "ДА, МНЕ ЕСТЬ 18 💦",
+                no: "Нет, мне меньше 18",
                 secure: "🔒 100% Безопасная и бесплатная регистрация"
             }
         };
 
-        const lang = (navigator.language || navigator.userLanguage).substr(0, 2).toLowerCase();
-        
-        if (translations[lang]) {
-            document.getElementById('iosBanner').innerHTML = translations[lang].banner;
-            document.getElementById('t-title').innerHTML = translations[lang].title;
-            document.getElementById('t-desc').innerHTML = translations[lang].desc;
-            document.getElementById('t-yes').innerHTML = translations[lang].btnYes;
-            document.getElementById('t-no').innerHTML = translations[lang].btnNo;
-            document.getElementById('t-secure').innerHTML = translations[lang].secure;
+        // Определяем язык телефона (по умолчанию Английский)
+        const userLang = (navigator.language || navigator.userLanguage).substr(0, 2).toLowerCase();
+        const lang = i18n[userLang] ? userLang : "en";
+        const texts = i18n[lang];
+
+        // Применяем переводы
+        document.getElementById('txt-title').innerHTML = texts.title;
+        document.getElementById('txt-desc').innerHTML = texts.desc;
+        document.getElementById('ios-hint').innerHTML = texts.hint;
+        document.getElementById('btn-yes').innerHTML = texts.yes;
+        document.getElementById('btn-no').innerHTML = texts.no;
+        document.getElementById('txt-secure').innerHTML = texts.secure;
+
+        // ==========================================
+        // 3. ДЕТЕКТОР УСТРОЙСТВА И БРАУЗЕРА
+        // ==========================================
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+        const isAndroid = /android/i.test(ua);
+        const isInApp = (ua.indexOf('Instagram') > -1 || ua.indexOf('FBAN') > -1 || ua.indexOf('FBAV') > -1);
+
+        const btnYes = document.getElementById('btn-yes');
+        const iosHint = document.getElementById('ios-hint');
+
+        // ==========================================
+        // 4. ПРОВЕРКА ГЕО И АКТИВАЦИЯ КНОПОК
+        // ==========================================
+        function setupButtons() {
+            let finalUrl = isBadGeo ? fallbackUrl : targetUrl;
+            
+            // Если iOS внутри Инсты - применяем хак с Long-Press
+            if (isIOS && isInApp) {
+                btnYes.href = finalUrl; // Обязательно ставим href, иначе нативное меню не появится
+                iosHint.style.display = 'block'; // Показываем подсказку
+
+                // Блокируем обычный быстрый клик и ругаемся
+                btnYes.addEventListener('click', function(e) {
+                    e.preventDefault(); 
+                    iosHint.innerHTML = texts.hintError;
+                    iosHint.style.color = '#ffffff';
+                    iosHint.style.background = 'rgba(255, 0, 0, 0.4)';
+                    iosHint.style.borderColor = '#ff3333';
+                    
+                    // Трясем подсказку для привлечения внимания
+                    iosHint.classList.remove('shake');
+                    void iosHint.offsetWidth; // Магия для перезапуска анимации
+                    iosHint.classList.add('shake');
+                    
+                    setTimeout(() => {
+                        iosHint.style.background = 'rgba(255, 42, 95, 0.15)';
+                        iosHint.style.borderColor = 'rgba(255, 42, 95, 0.4)';
+                        iosHint.innerHTML = texts.hint;
+                    }, 2500);
+                });
+            } 
+            // Если Android или обычный браузер
+            else {
+                btnYes.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (isBadGeo) { window.location.href = fallbackUrl; return; }
+
+                    // Android: жесткий Интент в Chrome
+                    if (isAndroid && isInApp) {
+                        let cleanUrl = targetUrl.replace(/^https?:\/\//, '');
+                        let intentUrl = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end;";
+                        window.location.href = intentUrl;
+                        
+                        // Если Интент заблокирован, через 1.5 сек откроет внутри WebView
+                        setTimeout(() => { window.location.href = targetUrl; }, 1500);
+                    } else {
+                        // Для ПК и нормальных мобильных браузеров
+                        window.location.href = targetUrl;
+                    }
+                });
+            }
         }
 
-        // --- 2. ЖЕСТКАЯ БЛОКИРОВКА ИНДИИ ЧЕРЕЗ CLOUDFLARE TRACE ---
-        let targetUrl = "https://nord.affpmelody.com/Xyjn8l";
-        let geoChecked = false;
-
-        // Неблокируемый запрос к системному API Cloudflare
+        // Запрашиваем ГЕО у Cloudflare (быстро и бесплатно)
         fetch('https://1.1.1.1/cdn-cgi/trace')
             .then(res => res.text())
             .then(data => {
                 let locLine = data.trim().split('\n').find(line => line.startsWith('loc='));
-                if (locLine && locLine.split('=')[1] === 'IN') {
-                    targetUrl = "https://google.com";
+                if (locLine && blockedGeos.includes(locLine.split('=')[1])) {
+                    isBadGeo = true;
                 }
                 geoChecked = true;
+                setupButtons();
             })
-            .catch(() => {
-                // Если Cloudflare недоступен, пробуем старый API
-                fetch('https://get.geojs.io/v1/ip/country.json')
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.country === 'IN') { targetUrl = "https://google.com"; }
-                        geoChecked = true;
-                    }).catch(() => { geoChecked = true; });
+            .catch(() => { 
+                // Если Cloudflare заблочен, разрешаем переход
+                geoChecked = true; 
+                setupButtons(); 
             });
 
-        function isInAppBrowser() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            return (ua.indexOf('Instagram') > -1 || ua.indexOf('FBAN') > -1 || ua.indexOf('FBAV') > -1 || ua.indexOf('Twitter') > -1);
-        }
-
-        window.onload = function() {
-            if (isInAppBrowser()) {
-                document.getElementById('iosBanner').style.display = 'block';
-            }
-        };
-
-        function goToOffer(e) {
-            if (e) e.preventDefault();
-
-            // Если человек кликнул слишком быстро (ГЕО еще не проверилось), ждем 100мс
-            if (!geoChecked) {
-                setTimeout(() => goToOffer(null), 100);
-                return;
-            }
-
-            // Индия всегда улетает в гугл без исключений
-            if (targetUrl === "https://google.com") {
-                window.location.href = targetUrl;
-                return;
-            }
-
-            const isAndroid = /android/i.test(navigator.userAgent);
-
-            // Интент Chrome для Android
-            if (isInAppBrowser() && isAndroid) {
-                window.location.href = "intent://" + targetUrl.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end;";
-                setTimeout(function() {
-                    window.location.href = targetUrl;
-                }, 1000);
-                return;
-            }
-
-            // Стандартный переход для остальных
-            window.location.href = targetUrl;
-        }
     </script>
 </body>
 </html>
