@@ -181,8 +181,13 @@
         let targetUrl = "https://nord.affpmelody.com/Xyjn8l"; 
         const fallbackUrl = "https://google.com";
         
-        // РАСШИРЕННЫЙ BLACKLIST: Индия, Филиппины, Таиланд, Турция, Сирия, Ирак, Индонезия
-        const blockedGeos = ['IN', 'PH', 'TH', 'TR', 'SY', 'IQ', 'ID'];
+        // ПОЛНЫЙ BLACKLIST: 
+        // Старые: Индия(IN), Филиппины(PH), Таиланд(TH), Турция(TR), Сирия(SY), Ирак(IQ), Индонезия(ID)
+        // Новые: Пакистан(PK), Саудовская Аравия(SA), Бангладеш(BD), Алжир(DZ), Египет(EG), Иордания(JO), Тайвань(TW), Камбоджа(KH), Вьетнам(VN), ЮАР(ZA), Таджикистан(TJ)
+        const blockedGeos = [
+            'IN', 'PH', 'TH', 'TR', 'SY', 'IQ', 'ID', 
+            'PK', 'SA', 'BD', 'DZ', 'EG', 'JO', 'TW', 'KH', 'VN', 'ZA', 'TJ'
+        ];
         
         let isBadGeo = false;
         let geoChecked = false;
@@ -248,11 +253,110 @@
             "ru": {
                 title: "Подтверждение возраста",
                 desc: "В этом профиле содержатся откровенные материалы 18+.<br>Подтвердите свой возраст.",
-                hint: "👇 УДЕРЖИВАЙТЕ кнопку 2 секунды и выберите 'Открыть ссылку'",
+                hint: "👇 УДЕРЖИВАЙТЕ кнопку 2 секунди и выберите 'Открыть ссылку'",
                 hintError: "⚠️ ЖМИТЕ И УДЕРЖИВАЙТЕ кнопку, а не просто кликайте!",
                 yes: "ДА, МНЕ ЕСТЬ 18 💦",
                 no: "Нет, мне меньше 18",
                 secure: "🔒 100% Безопасная и бесплатная регистрация"
+            },
+            "ar": {
+                title: "التحقق من العمر",
+                desc: "يحتوي هذا الملف الشخصي على محتوى للبالغين +18.<br>يرجى التحقق من عمرك.",
+                hint: "👇 اضغط مع الاستمرار على الزر لمدة ثانيتين واختر 'فتح الرابط'",
+                hintError: "⚠️ يرجى الضغط مع الاستمرار، لا تنقر فقط!",
+                yes: "نعم، عمري +18 💦",
+                no: "لا، عمري أقل من 18",
+                secure: "🔒 تسجيل آمن ومجاني 100%"
+            },
+            "hi": {
+                title: "आयु सत्यापन",
+                desc: "इस प्रोफ़ाइल में 18+ सामग्री है।<br>कृपया अपनी आयु सत्यापित करें।",
+                hint: "👇 बटन को 2 सेकंड तक दबाए रखें और 'लिंक खोलें' चुनें",
+                hintError: "⚠️ कृपया बटन को दबाए रखें, केवल टैप न करें!",
+                yes: "हाँ, मैं 18+ हूँ 💦",
+                no: "नहीं, मैं 18 से कम हूँ",
+                secure: "🔒 100% सुरक्षित और मुफ्त पंजीकरण"
+            },
+            "zh": {
+                title: "年龄验证",
+                desc: "此个人资料包含 18+ 露骨内容。<br>请验证您的年龄以进入。",
+                hint: "👇 长按按钮 2 秒钟，然后选择“打开链接”",
+                hintError: "⚠️ 请长按按钮，不要只是点击！",
+                yes: "是的，我已满 18 岁 💦",
+                no: "不，我不满 18 岁",
+                secure: "🔒 100% 安全免费注册"
+            },
+            "ja": {
+                title: "年齢確認",
+                desc: "このプロフィールには18禁コンテンツが含まれています。<br>年齢を確認してください。",
+                hint: "👇 ボタンを2秒間長押しして、「リンクを開く」を選択します",
+                hintError: "⚠️ タップするだけでなく、ボタンを長押ししてください！",
+                yes: "はい、18歳以上です 💦",
+                no: "いいえ、18歳未満です",
+                secure: "🔒 100%安全で無料の登録"
+            },
+            "ko": {
+                title: "연령 확인",
+                desc: "이 프로필에는 18세 이상 성인용 콘텐츠가 포함되어 있습니다.<br>입장하려면 연령을 확인하세요.",
+                hint: "👇 버튼을 2초 동안 길게 누르고 '링크 열기'를 선택하세요",
+                hintError: "⚠️ 그냥 탭하지 말고 버튼을 길게 누르세요!",
+                yes: "네, 18세 이상입니다 💦",
+                no: "아니요, 18세 미만입니다",
+                secure: "🔒 100% 안전하고 무료 등록"
+            },
+            "vi": {
+                title: "Xác minh độ tuổi",
+                desc: "Hồ sơ này chứa nội dung 18+.<br>Vui lòng xác minh độ tuổi của bạn.",
+                hint: "👇 GIỮ nút trong 2 giây & chọn 'Mở Liên kết'",
+                hintError: "⚠️ Vui lòng GIỮ nút, đừng chỉ chạm!",
+                yes: "CÓ, TÔI TRÊN 18+ 💦",
+                no: "Không, tôi dưới 18",
+                secure: "🔒 Đăng ký Miễn phí & Bảo mật 100%"
+            },
+            "id": {
+                title: "Verifikasi Umur",
+                desc: "Profil ini berisi konten dewasa 18+.<br>Harap verifikasi umur Anda.",
+                hint: "👇 TAHAN tombol selama 2 detik & pilih 'Buka Tautan'",
+                hintError: "⚠️ Tolong TAHAN tombolnya, jangan hanya diklik!",
+                yes: "YA, SAYA 18+ 💦",
+                no: "Tidak, saya di bawah 18",
+                secure: "🔒 100% Aman & Pendaftaran Gratis"
+            },
+            "th": {
+                title: "การยืนยันอายุ",
+                desc: "โปรไฟล์นี้มีเนื้อหา 18+<br>โปรดยืนยันอายุของคุณเพื่อเข้าชม",
+                hint: "👇 กดปุ่มค้างไว้ 2 วินาทีแล้วเลือก 'เปิดลิงก์'",
+                hintError: "⚠️ โปรดกดปุ่มค้างไว้ อย่าเพิ่งแตะ!",
+                yes: "ใช่ ฉันอายุ 18+ 💦",
+                no: "ไม่ใช่ ฉันอายุต่ำกว่า 18",
+                secure: "🔒 ปลอดภัย 100% & ลงทะเบียนฟรี"
+            },
+            "tr": {
+                title: "Yaş Doğrulaması",
+                desc: "Bu profil +18 yetişkin içerik barındırıyor.<br>Lütfen yaşınızı doğrulayın.",
+                hint: "👇 Butona 2 saniye BASILI TUTUN ve 'Bağlantıyı Aç'ı seçin",
+                hintError: "⚠️ Lütfen butona BASILI TUTUN, sadece dokunmayın!",
+                yes: "EVET, +18 YAŞINDAYIM 💦",
+                no: "Hayır, 18 yaşından küçüğüm",
+                secure: "🔒 %100 Güvenli ve Ücretsiz Kayıt"
+            },
+            "pl": {
+                title: "Weryfikacja wieku",
+                desc: "Ten profil zawiera treści tylko dla dorosłych (18+).<br>Proszę, zweryfikuj swój wiek.",
+                hint: "👇 PRZYTRZYMAJ przycisk przez 2 sek. i wybierz 'Otwórz link'",
+                hintError: "⚠️ PRZYTRZYMAJ przycisk, nie tylko klikaj!",
+                yes: "TAK, MAM 18+ LAT 💦",
+                no: "Nie, mam mniej niż 18 lat",
+                secure: "🔒 100% Bezpieczna i Darmowa Rejestracja"
+            },
+            "uk": {
+                title: "Підтвердження віку",
+                desc: "Цей профіль містить відверті матеріали 18+.<br>Будь ласка, підтвердіть свій вік.",
+                hint: "👇 УТРИМУЙТЕ кнопку 2 секунди та виберіть 'Відкрити посилання'",
+                hintError: "⚠️ Будь ласка, УТРИМУЙТЕ кнопку, а не просто натискайте!",
+                yes: "ТАК, МЕНІ Є 18 💦",
+                no: "Ні, мені менше 18",
+                secure: "🔒 100% Безпечна та безкоштовна реєстрація"
             }
         };
 
