@@ -1,459 +1,215 @@
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+
+async function handleRequest(request) {
+  // === 1. ЗАЩИТА ОТ БОТОВ (Клоакинг для Instagram/FB/Google) ===
+  const userAgent = (request.headers.get('user-agent') || '').toLowerCase();
+  const botPattern = /bot|spider|crawl|facebook|instagram|whatsapp|telegram|twitter|tiktok|vkshare|discord/i;
+  
+  if (botPattern.test(userAgent)) {
+    // Ботов отправляем на белую страницу (в данном случае редирект на YouTube)
+    return Response.redirect('https://www.youtube.com', 302);
+  }
+
+  // === 2. GEO ФИЛЬТРАЦИЯ ТРАФИКА ===
+  // Получаем код страны посетителя от Cloudflare
+  const country = (request.headers.get('cf-ipcountry') || '').toUpperCase();
+
+  // Расширенный Блеклист (Tier 3 + Турция: >90 стран с копеечной оплатой)
+  // Латинская Америка, Европа и Tier-1 ЗДЕСЬ ОТСУТСТВУЮТ!
+  const blacklist = [
+    // === ТУРЦИЯ ===
+    'TR', 
+    
+    // === ЮЖНАЯ И ЦЕНТРАЛЬНАЯ АЗИЯ ===
+    'IN', 'PK', 'BD', 'LK', 'NP', 'MV', 'BT', 'AF', 
+    'KG', 'TJ', 'TM', 'MN',             
+
+    // === ЮГО-ВОСТОЧНАЯ АЗИЯ ===
+    'ID', 'PH', 'VN', 'MM', 'KH', 'LA', 'MY', 'TH', 'TL',
+
+    // === БЛИЖНИЙ ВОСТОК ===
+    'IR', 'IQ', 'SY', 'YE', 'JO', 'LB', 'OM', 'KW', 'QA', 'BH', 'SA', 'AE', 'PS',
+
+    // === СЕВЕРНАЯ АФРИКА ===
+    'EG', 'DZ', 'MA', 'TN', 'LY', 'SD',
+
+    // === АФРИКА (Субсахарская Африка) ===
+    'NG', 'ZA', 'KE', 'ET', 'GH', 'UG', 'AO', 'MZ', 'CI', 'CM', 
+    'SN', 'TZ', 'ZM', 'ZW', 'RW', 'MW', 'ML', 'BF', 'GN', 'BJ', 
+    'BI', 'TG', 'SL', 'LR', 'MR', 'ER', 'SO', 'DJ', 'CG', 'CD', 
+    'GA', 'GQ', 'TD', 'NE', 'GM', 'GW', 'CV', 'ST', 'KM', 'SC', 
+    'MU', 'MG', 'BW', 'NA', 'LS', 'SZ',
+
+    // === КАРИБСКИЙ БАССЕЙН И ОКЕАНИЯ ===
+    'HT', 'CU', 'PG', 'FJ', 'SB', 'VU', 'WS', 'TO', 'KI', 'FM'
+  ];
+
+  // Если страна в блеклисте - редирект на Google
+  if (blacklist.includes(country)) {
+    return Response.redirect('https://www.google.com', 302);
+  }
+
+  // === 3. ЦЕЛЕВАЯ СТРАНИЦА (Для премиум трафика) ===
+  // Ссылка, куда пойдет пользователь после клика
+  const targetUrl = "https://nord.affpmelody.com/Xyjn8l";
+
+  const premiumHtml = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
-    <title>Private Profile Verification</title>
+    <title>Age Verification</title>
     <style>
-        /* ==========================================
-           ПРЕМИУМ ДИЗАЙН (GLASSMORPHISM + GLOW)
-           ========================================== */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            /* Глубокий темный фон с красно-розовым свечением */
-            background: radial-gradient(circle at 50% 30%, #3a0d1c 0%, #050505 80%);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { 
+            background: radial-gradient(circle at 50% 30%, #1a1a2e 0%, #050505 100%); 
+            color: #ffffff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            text-align: center; 
+            padding: 15px; 
             overflow: hidden;
-            padding: 20px;
         }
-
-        /* Эффект матового стекла (Apple Style) */
-        .glass-panel {
-            background: rgba(20, 20, 20, 0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 28px;
-            padding: 40px 25px;
-            width: 100%;
-            max-width: 380px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
-            position: relative;
-            transform: translateY(20px);
-            animation: float-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0;
+        
+        .glass-panel { 
+            background: rgba(15, 15, 15, 0.75); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 32px; 
+            padding: 50px 25px; 
+            width: 100%; 
+            max-width: 400px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            animation: float-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
+            opacity: 0; 
         }
-
-        .icon-warning {
-            font-size: 50px;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 0 15px rgba(255, 42, 95, 0.6));
-            animation: pulse-icon 2s infinite;
+        
+        h1 { 
+            font-size: 32px; 
+            font-weight: 900; 
+            margin-bottom: 35px; 
+            background: linear-gradient(90deg, #ffffff, #dcdcdc); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
         }
-
-        h1 {
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-            background: linear-gradient(90deg, #ffffff, #ffb3c6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        
+        /* ГОРЯЩАЯ КНОПКА */
+        .btn-verify { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 100%; 
+            padding: 20px; 
+            border-radius: 20px; 
+            font-size: 20px; 
+            font-weight: 900; 
+            color: white; 
+            text-decoration: none; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            transition: all 0.2s; 
+            position: relative; 
+            overflow: hidden; 
+            border: none;
+            
+            background: linear-gradient(135deg, #ff004c, #ff5e00);
+            box-shadow: 0 0 15px rgba(255, 0, 76, 0.8), 0 0 30px rgba(255, 94, 0, 0.6);
+            animation: pulse-glow 1.5s infinite;
         }
-
-        p {
-            font-size: 15px;
-            color: #b3b3b3;
-            margin-bottom: 30px;
-            line-height: 1.5;
+        
+        .btn-verify::after { 
+            content: ''; 
+            position: absolute; 
+            top: 0; left: -100%; 
+            width: 50%; height: 100%; 
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); 
+            animation: shine 2.5s infinite; 
         }
+        
+        .btn-verify:active { transform: scale(0.95); }
 
-        /* Анимированная подсказка для iOS */
-        .ios-hint {
-            display: none;
-            background: rgba(255, 42, 95, 0.15);
-            border: 1px solid rgba(255, 42, 95, 0.4);
-            color: #ffdae0;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            animation: pulse-border 2s infinite;
-            transition: all 0.3s ease;
-        }
-
-        .btn-container {
+        /* БЛОК С ПОДСКАЗКОЙ ВНИЗУ */
+        .hint-container {
+            margin-top: 25px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 18px;
-            border-radius: 16px;
+            align-items: center;
+            gap: 10px;
+            color: #ffeb3b;
             font-size: 16px;
-            font-weight: 800;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s;
-            /* ВАЖНО: Разрешаем вызов нативного меню iOS при долгом нажатии */
-            -webkit-touch-callout: default !important; 
-            cursor: pointer;
+            font-weight: 700;
         }
 
-        .btn-glow {
-            background: linear-gradient(135deg, #ff2a5f, #ff6b3d);
-            color: white;
-            border: none;
-            box-shadow: 0 10px 25px rgba(255, 42, 95, 0.4);
-            position: relative;
-            overflow: hidden;
+        .emoji-up {
+            font-size: 30px;
+            animation: bounceUp 0.8s infinite alternate;
         }
 
-        .btn-glow::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shine 3s infinite;
-        }
-
-        .btn-glow:active { transform: scale(0.96); box-shadow: 0 5px 15px rgba(255, 42, 95, 0.4); }
-
-        .btn-ghost {
-            background: transparent;
-            color: #777;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .secure-badge {
-            margin-top: 25px;
-            font-size: 12px;
-            color: #666;
-            font-weight: 500;
-        }
-
-        /* Анимации */
         @keyframes float-up { to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse-icon { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        @keyframes pulse-border { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,42,95,0.4); } 50% { box-shadow: 0 0 0 8px rgba(255,42,95,0); } }
         @keyframes shine { 100% { left: 200%; } }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-8px); }
-            50% { transform: translateX(8px); }
-            75% { transform: translateX(-8px); }
+        
+        /* АНИМАЦИЯ СВЕЧЕНИЯ (Горение) */
+        @keyframes pulse-glow { 
+            0% { box-shadow: 0 0 15px rgba(255, 0, 76, 0.8); transform: scale(1); } 
+            50% { box-shadow: 0 0 30px rgba(255, 0, 76, 1), 0 0 50px rgba(255, 94, 0, 0.8); transform: scale(1.03); } 
+            100% { box-shadow: 0 0 15px rgba(255, 0, 76, 0.8); transform: scale(1); } 
         }
-        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+        /* АНИМАЦИЯ ЭМОДЗИ */
+        @keyframes bounceUp { 
+            from { transform: translateY(0); } 
+            to { transform: translateY(-8px); } 
+        }
     </style>
 </head>
 <body>
-
     <div class="glass-panel">
-        <div class="icon-warning">🤫</div>
-        <h1 id="txt-title">Age Verification</h1>
-        <p id="txt-desc">This profile contains explicit 18+ content.<br>Please verify your age to enter.</p>
+        <h1 id="txt-title">Are you 18?</h1>
 
-        <!-- Подсказка для iOS -->
-        <div id="ios-hint" class="ios-hint">
-            👇 HOLD button for 2 seconds & select 'Open Link'
+        <a href="${targetUrl}" class="btn-verify">
+            <span id="txt-btn">Yes, I am 18</span>
+        </a>
+
+        <div class="hint-container">
+            <span id="txt-hint">👆 Click the button above 👆</span>
+            <div class="emoji-up">👆</div>
         </div>
-
-        <div class="btn-container">
-            <a href="#" id="btn-yes" class="btn btn-glow">YES, I AM 18+ 💦</a>
-            <a href="https://szap.top/click?o=2&a=1551&sub_id2=Hm" id="btn-no" class="btn btn-ghost">No, I'm under 18</a>
-        </div>
-
-        <div id="txt-secure" class="secure-badge">🔒 100% Secure & Free Registration</div>
     </div>
 
     <script>
-        // ==========================================
-        // 1. НАСТРОЙКИ ССЫЛОК И ГЕО-БЛОКИРОВКИ
-        // ==========================================
-        let targetUrl = "https://szap.top/click?o=2&a=1551&sub_id2=Hm"; 
-        const fallbackUrl = "https://szap.top/click?o=2&a=1551&sub_id2=Hm";
-        
-        // ПОЛНЫЙ BLACKLIST: 
-        // Старые: Индия(IN), Филиппины(PH), Таиланд(TH), Турция(TR), Сирия(SY), Ирак(IQ), Индонезия(ID)
-        // Новые: Пакистан(PK), Саудовская Аравия(SA), Бангладеш(BD), Алжир(DZ), Египет(EG), Иордания(JO), Тайвань(TW), Камбоджа(KH), Вьетнам(VN), ЮАР(ZA), Таджикистан(TJ)
-        // Копеечные (< $0.10): Нигерия(NG), Кения(KE), Гана(GH), Непал(NP), Шри-Ланка(LK), Мьянма(MM), Венесуэла(VE), Куба(CU), Иран(IR), Афганистан(AF), Йемен(YE), Эфиопия(ET)
-        const blockedGeos = [
-            'IN'
-        ];
-        
-        let isBadGeo = false;
-        let geoChecked = false;
-
-        // ==========================================
-        // 2. СМАРТ-ЛОКАЛИЗАЦИЯ (АВТО-ПЕРЕВОД)
-        // ==========================================
+        // === УМНАЯ ЛОКАЛИЗАЦИЯ ===
         const i18n = {
-            "en": {
-                title: "Age Verification",
-                desc: "This profile contains explicit 18+ content.<br>Please verify your age to enter.",
-                hint: "👇 HOLD button for 2 seconds & select 'Open Link'",
-                hintError: "⚠️ Please HOLD the button, do not just tap!",
-                yes: "YES, I AM 18+ 💦",
-                no: "No, I'm under 18",
-                secure: "🔒 100% Secure & Free Registration"
-            },
-            "es": {
-                title: "Verificación de Edad",
-                desc: "Este perfil contiene contenido explícito +18.<br>Por favor verifica tu edad.",
-                hint: "👇 MANTÉN presionado el botón 2 seg. y elige 'Abrir enlace'",
-                hintError: "⚠️ ¡MANTÉN presionado el botón, no solo lo toques!",
-                yes: "SÍ, TENGO +18 💦",
-                no: "No, soy menor de 18",
-                secure: "🔒 Registro 100% Seguro y Gratuito"
-            },
-            "pt": {
-                title: "Verificação de Idade",
-                desc: "Este perfil contém conteúdo explícito +18.<br>Por favor, verifique sua idade.",
-                hint: "👇 SEGURE o botão por 2 seg. e escolha 'Abrir link'",
-                hintError: "⚠️ Por favor, SEGURE o botão, não apenas toque!",
-                yes: "SIM, TENHO +18 💦",
-                no: "Não, sou menor de 18",
-                secure: "🔒 Registro 100% Seguro e Gratuito"
-            },
-            "fr": {
-                title: "Vérification d'âge",
-                desc: "Ce profil contient du contenu explicite +18.<br>Veuillez vérifier votre âge.",
-                hint: "👇 MAINTENEZ le bouton 2 sec et choisissez 'Ouvrir le lien'",
-                hintError: "⚠️ Veuillez MAINTENIR le bouton appuyé !",
-                yes: "OUI, J'AI +18 ANS 💦",
-                no: "Non, j'ai moins de 18 ans",
-                secure: "🔒 Inscription 100% Sécurisée et Gratuite"
-            },
-            "de": {
-                title: "Altersprüfung",
-                desc: "Dieses Profil enthält explizite 18+ Inhalte.<br>Bitte bestätige dein Alter.",
-                hint: "👇 HALTE den Button 2 Sek. und wähle 'Link öffnen'",
-                hintError: "⚠️ Bitte HALTE den Button gedrückt!",
-                yes: "JA, ICH BIN 18+ 💦",
-                no: "Nein, ich bin unter 18",
-                secure: "🔒 100% Sichere & Kostenlose Registrierung"
-            },
-            "it": {
-                title: "Verifica dell'età",
-                desc: "Questo profilo contiene contenuti espliciti V.M. 18 anni.<br>Verifica la tua età.",
-                hint: "👇 TIENI PREMUTO per 2 sec. e scegli 'Apri link'",
-                hintError: "⚠️ TIENI PREMUTO il pulsante, non toccarlo e basta!",
-                yes: "SÌ, HO 18+ ANNI 💦",
-                no: "No, ho meno di 18 anni",
-                secure: "🔒 Registrazione 100% Sicura e Gratuita"
-            },
-            "ru": {
-                title: "Подтверждение возраста",
-                desc: "В этом профиле содержатся откровенные материалы 18+.<br>Подтвердите свой возраст.",
-                hint: "👇 УДЕРЖИВАЙТЕ кнопку 2 секунди и выберите 'Открыть ссылку'",
-                hintError: "⚠️ ЖМИТЕ И УДЕРЖИВАЙТЕ кнопку, а не просто кликайте!",
-                yes: "ДА, МНЕ ЕСТЬ 18 💦",
-                no: "Нет, мне меньше 18",
-                secure: "🔒 100% Безопасная и бесплатная регистрация"
-            },
-            "ar": {
-                title: "التحقق من العمر",
-                desc: "يحتوي هذا الملف الشخصي على محتوى للبالغين +18.<br>يرجى التحقق من عمرك.",
-                hint: "👇 اضغط مع الاستمرار على الزر لمدة ثانيتين واختر 'فتح الرابط'",
-                hintError: "⚠️ يرجى الضغط مع الاستمرار، لا تنقر فقط!",
-                yes: "نعم، عمري +18 💦",
-                no: "لا، عمري أقل من 18",
-                secure: "🔒 تسجيل آمن ومجاني 100%"
-            },
-            "hi": {
-                title: "आयु सत्यापन",
-                desc: "इस प्रोफ़ाइल में 18+ सामग्री है।<br>कृपया अपनी आयु सत्यापित करें।",
-                hint: "👇 बटन को 2 सेकंड तक दबाए रखें और 'लिंक खोलें' चुनें",
-                hintError: "⚠️ कृपया बटन को दबाए रखें, केवल टैप न करें!",
-                yes: "हाँ, मैं 18+ हूँ 💦",
-                no: "नहीं, मैं 18 से कम हूँ",
-                secure: "🔒 100% सुरक्षित और मुफ्त पंजीकरण"
-            },
-            "zh": {
-                title: "年龄验证",
-                desc: "此个人资料包含 18+ 露骨内容。<br>请验证您的年龄以进入。",
-                hint: "👇 长按按钮 2 秒钟，然后选择“打开链接”",
-                hintError: "⚠️ 请长按按钮，不要只是点击！",
-                yes: "是的，我已满 18 岁 💦",
-                no: "不，我不满 18 岁",
-                secure: "🔒 100% 安全免费注册"
-            },
-            "ja": {
-                title: "年齢確認",
-                desc: "このプロフィールには18禁コンテンツが含まれています。<br>年齢を確認してください。",
-                hint: "👇 ボタンを2秒間長押しして、「リンクを開く」を選択します",
-                hintError: "⚠️ タップするだけでなく、ボタンを長押ししてください！",
-                yes: "はい、18歳以上です 💦",
-                no: "いいえ、18歳未満です",
-                secure: "🔒 100%安全で無料の登録"
-            },
-            "ko": {
-                title: "연령 확인",
-                desc: "이 프로필에는 18세 이상 성인용 콘텐츠가 포함되어 있습니다.<br>입장하려면 연령을 확인하세요.",
-                hint: "👇 버튼을 2초 동안 길게 누르고 '링크 열기'를 선택하세요",
-                hintError: "⚠️ 그냥 탭하지 말고 버튼을 길게 누르세요!",
-                yes: "네, 18세 이상입니다 💦",
-                no: "아니요, 18세 미만입니다",
-                secure: "🔒 100% 안전하고 무료 등록"
-            },
-            "vi": {
-                title: "Xác minh độ tuổi",
-                desc: "Hồ sơ này chứa nội dung 18+.<br>Vui lòng xác minh độ tuổi của bạn.",
-                hint: "👇 GIỮ nút trong 2 giây & chọn 'Mở Liên kết'",
-                hintError: "⚠️ Vui lòng GIỮ nút, đừng chỉ chạm!",
-                yes: "CÓ, TÔI TRÊN 18+ 💦",
-                no: "Không, tôi dưới 18",
-                secure: "🔒 Đăng ký Miễn phí & Bảo mật 100%"
-            },
-            "id": {
-                title: "Verifikasi Umur",
-                desc: "Profil ini berisi konten dewasa 18+.<br>Harap verifikasi umur Anda.",
-                hint: "👇 TAHAN tombol selama 2 detik & pilih 'Buka Tautan'",
-                hintError: "⚠️ Tolong TAHAN tombolnya, jangan hanya diklik!",
-                yes: "YA, SAYA 18+ 💦",
-                no: "Tidak, saya di bawah 18",
-                secure: "🔒 100% Aman & Pendaftaran Gratis"
-            },
-            "th": {
-                title: "การยืนยันอายุ",
-                desc: "โปรไฟล์นี้มีเนื้อหา 18+<br>โปรดยืนยันอายุของคุณเพื่อเข้าชม",
-                hint: "👇 กดปุ่มค้างไว้ 2 วินาทีแล้วเลือก 'เปิดลิงก์'",
-                hintError: "⚠️ โปรดกดปุ่มค้างไว้ อย่าเพิ่งแตะ!",
-                yes: "ใช่ ฉันอายุ 18+ 💦",
-                no: "ไม่ใช่ ฉันอายุต่ำกว่า 18",
-                secure: "🔒 ปลอดภัย 100% & ลงทะเบียนฟรี"
-            },
-            "tr": {
-                title: "Yaş Doğrulaması",
-                desc: "Bu profil +18 yetişkin içerik barındırıyor.<br>Lütfen yaşınızı doğrulayın.",
-                hint: "👇 Butona 2 saniye BASILI TUTUN ve 'Bağlantıyı Aç'ı seçin",
-                hintError: "⚠️ Lütfen butona BASILI TUTUN, sadece dokunmayın!",
-                yes: "EVET, +18 YAŞINDAYIM 💦",
-                no: "Hayır, 18 yaşından küçüğüm",
-                secure: "🔒 %100 Güvenli ve Ücretsiz Kayıt"
-            },
-            "pl": {
-                title: "Weryfikacja wieku",
-                desc: "Ten profil zawiera treści tylko dla dorosłych (18+).<br>Proszę, zweryfikuj swój wiek.",
-                hint: "👇 PRZYTRZYMAJ przycisk przez 2 sek. i wybierz 'Otwórz link'",
-                hintError: "⚠️ PRZYTRZYMAJ przycisk, nie tylko klikaj!",
-                yes: "TAK, MAM 18+ LAT 💦",
-                no: "Nie, mam mniej niż 18 lat",
-                secure: "🔒 100% Bezpieczna i Darmowa Rejestracja"
-            },
-            "uk": {
-                title: "Підтвердження віку",
-                desc: "Цей профіль містить відверті матеріали 18+.<br>Будь ласка, підтвердіть свій вік.",
-                hint: "👇 УТРИМУЙТЕ кнопку 2 секунди та виберіть 'Відкрити посилання'",
-                hintError: "⚠️ Будь ласка, УТРИМУЙТЕ кнопку, а не просто натискайте!",
-                yes: "ТАК, МЕНІ Є 18 💦",
-                no: "Ні, мені менше 18",
-                secure: "🔒 100% Безпечна та безкоштовна реєстрація"
-            }
+            "en": { title: "Are you 18 or older?", btn: "Yes, I am 18", hint: "Click the button above" },
+            "es": { title: "¿Tienes 18 años o más?", btn: "Sí, tengo 18", hint: "Haz clic en el botón de arriba" },
+            "pt": { title: "Você tem 18 anos ou mais?", btn: "Sim, eu tenho 18", hint: "Clique no botão acima" },
+            "ru": { title: "Тебе есть 18?", btn: "Да, мне есть 18", hint: "Нажми на кнопку выше" },
+            "de": { title: "Bist du 18 oder älter?", btn: "Ja, ich bin 18", hint: "Klick auf den Button oben" },
+            "fr": { title: "As-tu 18 ans ou plus?", btn: "Oui, j'ai 18 ans", hint: "Cliquez sur le bouton ci-dessus" },
+            "it": { title: "Hai 18 anni o più?", btn: "Sì, ho 18 anni", hint: "Clicca il pulsante qui sopra" },
+            "pl": { title: "Masz 18 lat lub więcej?", btn: "Tak, mam 18 lat", hint: "Kliknij przycisk powyżej" },
+            "nl": { title: "Ben je 18 jaar of ouder?", btn: "Ja, ik ben 18", hint: "Klik op de knop hierboven" }
         };
 
-        // Определяем язык телефона (по умолчанию Английский)
-        const userLang = (navigator.language || navigator.userLanguage).substr(0, 2).toLowerCase();
-        const lang = i18n[userLang] ? userLang : "en";
+        const rawLang = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+        const shortLang = rawLang.split('-')[0];
+        
+        const lang = i18n[rawLang] ? rawLang : (i18n[shortLang] ? shortLang : "en");
         const texts = i18n[lang];
 
-        // Применяем переводы
         document.getElementById('txt-title').innerHTML = texts.title;
-        document.getElementById('txt-desc').innerHTML = texts.desc;
-        document.getElementById('ios-hint').innerHTML = texts.hint;
-        document.getElementById('btn-yes').innerHTML = texts.yes;
-        document.getElementById('btn-no').innerHTML = texts.no;
-        document.getElementById('txt-secure').innerHTML = texts.secure;
-
-        // ==========================================
-        // 3. ДЕТЕКТОР УСТРОЙСТВА И БРАУЗЕРА
-        // ==========================================
-        const ua = navigator.userAgent || navigator.vendor || window.opera;
-        const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-        const isAndroid = /android/i.test(ua);
-        const isInApp = (ua.indexOf('Instagram') > -1 || ua.indexOf('FBAN') > -1 || ua.indexOf('FBAV') > -1);
-
-        const btnYes = document.getElementById('btn-yes');
-        const iosHint = document.getElementById('ios-hint');
-
-        // ==========================================
-        // 4. ПРОВЕРКА ГЕО И АКТИВАЦИЯ КНОПОК
-        // ==========================================
-        function setupButtons() {
-            let finalUrl = isBadGeo ? fallbackUrl : targetUrl;
-            
-            // Если iOS внутри Инсты - применяем хак с Long-Press
-            if (isIOS && isInApp) {
-                btnYes.href = finalUrl; // Обязательно ставим href, иначе нативное меню не появится
-                iosHint.style.display = 'block'; // Показываем подсказку
-
-                // Блокируем обычный быстрый клик и ругаемся
-                btnYes.addEventListener('click', function(e) {
-                    e.preventDefault(); 
-                    iosHint.innerHTML = texts.hintError;
-                    iosHint.style.color = '#ffffff';
-                    iosHint.style.background = 'rgba(255, 0, 0, 0.4)';
-                    iosHint.style.borderColor = '#ff3333';
-                    
-                    // Трясем подсказку для привлечения внимания
-                    iosHint.classList.remove('shake');
-                    void iosHint.offsetWidth; // Магия для перезапуска анимации
-                    iosHint.classList.add('shake');
-                    
-                    setTimeout(() => {
-                        iosHint.style.background = 'rgba(255, 42, 95, 0.15)';
-                        iosHint.style.borderColor = 'rgba(255, 42, 95, 0.4)';
-                        iosHint.innerHTML = texts.hint;
-                    }, 2500);
-                });
-            } 
-            // Если Android или обычный браузер
-            else {
-                btnYes.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (isBadGeo) { window.location.href = fallbackUrl; return; }
-
-                    // Android: жесткий Интент в Chrome
-                    if (isAndroid && isInApp) {
-                        let cleanUrl = targetUrl.replace(/^https?:\/\//, '');
-                        let intentUrl = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end;";
-                        window.location.href = intentUrl;
-                        
-                        // Если Интент заблокирован, через 1.5 сек откроет внутри WebView
-                        setTimeout(() => { window.location.href = targetUrl; }, 1500);
-                    } else {
-                        // Для ПК и нормальных мобильных браузеров
-                        window.location.href = targetUrl;
-                    }
-                });
-            }
-        }
-
-        // Запрашиваем ГЕО у Cloudflare (быстро и бесплатно)
-        fetch('https://1.1.1.1/cdn-cgi/trace')
-            .then(res => res.text())
-            .then(data => {
-                let locLine = data.trim().split('\n').find(line => line.startsWith('loc='));
-                if (locLine && blockedGeos.includes(locLine.split('=')[1])) {
-                    isBadGeo = true;
-                }
-                geoChecked = true;
-                setupButtons();
-            })
-            .catch(() => { 
-                // Если Cloudflare заблочен, разрешаем переход
-                geoChecked = true; 
-                setupButtons(); 
-            });
-
+        document.getElementById('txt-btn').innerHTML = texts.btn;
+        document.getElementById('txt-hint').innerHTML = "👆 " + texts.hint + " 👆";
     </script>
 </body>
 </html>
+  `;
+  
+  return new Response(premiumHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' } });
+}
